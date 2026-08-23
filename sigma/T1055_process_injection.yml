@@ -1,0 +1,40 @@
+title: Remote Thread Creation Indicative of Process Injection
+id: e5f60718-5a6b-4c5d-8e04-3a4b5c6d7e82   # regenerate your own UUID if you fork widely
+status: experimental
+description: >
+  Detects a process creating a thread in another process's address space
+  (Sysmon EID 8, CreateRemoteThread), a core primitive of code injection. Keys on the
+  cross-process thread creation behaviour, excluding well-known benign source images.
+references:
+  - https://attack.mitre.org/techniques/T1055/
+author: DetectForge
+date: 2026/08/14
+tags:
+  - attack.defense_evasion
+  - attack.privilege_escalation
+  - attack.t1055
+logsource:
+  product: windows
+  category: create_remote_thread
+detection:
+  selection:
+    TargetImage|endswith:
+      - '\svchost.exe'
+      - '\explorer.exe'
+      - '\notepad.exe'
+      - '\rundll32.exe'
+      - '\lsass.exe'
+      - '\werfault.exe'
+  filter_benign:
+    SourceImage|contains:
+      - '\Windows Defender\'
+      - '\MsMpEng.exe'
+    SourceImage|endswith:
+      - '\csrss.exe'
+      - '\wininit.exe'
+      - '\services.exe'
+  condition: selection and not filter_benign
+falsepositives:
+  - Some legitimate software and security tooling injects threads. Review SourceImage
+    lineage; allowlist verified signed injectors (extend filter_benign).
+level: high

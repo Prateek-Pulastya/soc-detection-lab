@@ -1,0 +1,53 @@
+title: Scripted Outbound Connection to External Host (Possible Exfiltration)
+id: 3b4c5d6e-aabc-4c5d-8e09-8a9b0c1db0d7   # regenerate your own UUID if you fork widely
+status: experimental
+description: >
+  Heuristic. Detects a script/LOLBin process (PowerShell, curl, nslookup, certutil)
+  initiating an outbound connection to a non-private (external) address, consistent with
+  exfiltration over an alternative protocol (T1048) or a web service (T1567). This is a
+  deliberately low-fidelity hunting rule — network egress alone rarely proves exfil, so
+  it is expected to need correlation (volume, destination reputation) or to be the
+  project's documented partial miss.
+references:
+  - https://attack.mitre.org/techniques/T1048/
+  - https://attack.mitre.org/techniques/T1567/
+author: DetectForge
+date: 2026/08/14
+tags:
+  - attack.exfiltration
+  - attack.t1048
+  - attack.t1567
+logsource:
+  product: windows
+  category: network_connection
+detection:
+  selection:
+    Initiated: 'true'
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\curl.exe'
+      - '\nslookup.exe'
+      - '\certutil.exe'
+      - '\bitsadmin.exe'
+  filter_internal:
+    DestinationIp|startswith:
+      - '10.'
+      - '192.168.'
+      - '172.16.'
+      - '172.17.'
+      - '172.18.'
+      - '172.19.'
+      - '172.2'
+      - '172.30.'
+      - '172.31.'
+      - '127.'
+      - '169.254.'
+      - '::1'
+      - 'fe80:'
+  condition: selection and not filter_internal
+falsepositives:
+  - High. Scripts and admin tools legitimately reach the internet (updates, telemetry,
+    package installs). Treat hits as leads for correlation, not standalone alerts; tune
+    hard by destination reputation / expected callers before raising severity.
+level: low

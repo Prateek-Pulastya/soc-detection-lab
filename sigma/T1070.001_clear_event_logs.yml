@@ -1,0 +1,38 @@
+title: Windows Event Log Cleared
+id: f6071829-6a7b-4c5d-8e05-4a5b6c7d8e93   # regenerate your own UUID if you fork widely
+status: experimental
+description: >
+  Detects clearing of Windows event logs via wevtutil, PowerShell Clear-EventLog /
+  Remove-EventLog, or the wmic/Clear-WinEvent equivalents. Anti-forensics behaviour.
+  The Security-channel EventID 1102 (audit log cleared) is caught by a companion native
+  Wazuh rule (see local_rules.xml 100252) for higher fidelity.
+references:
+  - https://attack.mitre.org/techniques/T1070/001/
+author: DetectForge
+date: 2026/08/14
+tags:
+  - attack.defense_evasion
+  - attack.t1070.001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_wevtutil:
+    Image|endswith: '\wevtutil.exe'
+    CommandLine|contains:
+      - ' cl '
+      - ' clear-log '
+  selection_ps:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+    CommandLine|contains:
+      - 'Clear-EventLog'
+      - 'Remove-EventLog'
+      - 'Clear-WinEvent'
+      - '.ClearEventLog('
+  condition: selection_wevtutil or selection_ps
+falsepositives:
+  - Admins occasionally clear logs during maintenance. Rare enough that any hit warrants
+    triage; allowlist a specific maintenance host only if truly needed.
+level: high

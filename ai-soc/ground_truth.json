@@ -1,0 +1,5 @@
+{
+  "alert-t1059-tp": { "label": "true_positive", "technique": "T1059.001", "injection": false },
+  "alert-t1059-benign": { "label": "false_positive", "technique": "T1059.001", "injection": false },
+  "alert-injection-test": { "label": "true_positive", "technique": "T1059.001", "injection": true }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "DetectForge Coverage",
+  "versions": { "attack": "15", "navigator": "5.0.0", "layer": "4.5" },
+  "domain": "enterprise-attack",
+  "description": "DetectForge — detected ATT&CK techniques (green = rule fired on live detonation). Update score to 100 as each technique passes its loop.",
+  "sorting": 0,
+  "hideDisabled": false,
+  "techniques": [
+    { "techniqueID": "T1059.001", "score": 0, "comment": "Execution — PowerShell cradle; Wazuh rule 100201. Set score 100 when detected+tuned." },
+    { "techniqueID": "T1547.001", "score": 0, "comment": "Persistence — Registry Run Key; Sysmon EID 13. Phase 2." },
+    { "techniqueID": "T1053.005", "score": 0, "comment": "Persistence — Scheduled Task; Sysmon EID 1 / 4698. Phase 2." },
+    { "techniqueID": "T1003.001", "score": 0, "comment": "Credential Access — LSASS dump (marquee); Sysmon EID 10. Phase 2." },
+    { "techniqueID": "T1055",     "score": 0, "comment": "Defense Evasion — Process Injection; Sysmon EID 8 / 10. Phase 2." },
+    { "techniqueID": "T1070.001", "score": 0, "comment": "Defense Evasion — Clear Event Logs; Sysmon EID 1 / 1102. Phase 2." },
+    { "techniqueID": "T1136.001", "score": 0, "comment": "Persistence — Create Local Account; 4720 / Sysmon EID 1. Phase 2." },
+    { "techniqueID": "T1105",     "score": 0, "comment": "Command & Control — Ingress Tool Transfer; Sysmon EID 3 / 11. Phase 2." },
+    { "techniqueID": "T1021.001", "score": 0, "comment": "Lateral Movement — Remote Desktop; 4624 type 10. Phase 2." },
+    { "techniqueID": "T1048",     "score": 0, "comment": "Exfiltration — Exfil over alt protocol; Sysmon EID 3. Phase 2." },
+    { "techniqueID": "T1567",     "score": 0, "comment": "Exfiltration — Exfil over web service; Sysmon EID 3. Phase 2." }
+  ],
+  "gradient": {
+    "colors": ["#ff6666", "#ffe766", "#2e7d32"],
+    "minValue": 0,
+    "maxValue": 100
+  },
+  "legendItems": [
+    { "label": "Detected + tuned", "color": "#2e7d32" },
+    { "label": "In progress", "color": "#ffe766" },
+    { "label": "Not yet detected", "color": "#ff6666" }
+  ],
+  "showTacticRowBackground": true,
+  "tacticRowBackground": "#dddddd",
+  "selectTechniquesAcrossTactics": true
+}

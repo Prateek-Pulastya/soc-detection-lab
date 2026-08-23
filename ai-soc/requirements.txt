@@ -1,0 +1,3 @@
+anthropic>=0.69
+# requests is only needed for --from-wazuh (pulling live alerts from the indexer)
+requests>=2.31

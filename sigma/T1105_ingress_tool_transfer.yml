@@ -1,0 +1,47 @@
+title: Ingress Tool Transfer via LOLBin Downloaders
+id: 182a3b4c-8a9b-4c5d-8e07-6a7b8c9daeb5   # regenerate your own UUID if you fork widely
+status: experimental
+description: >
+  Detects download of a remote file using living-off-the-land binaries commonly abused to
+  stage tooling: certutil -urlcache, bitsadmin /transfer, curl, wget, and PowerShell
+  DownloadFile/Invoke-WebRequest -OutFile. Keys on the download behaviour, not the URL.
+references:
+  - https://attack.mitre.org/techniques/T1105/
+author: DetectForge
+date: 2026/08/14
+tags:
+  - attack.command_and_control
+  - attack.t1105
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_certutil:
+    Image|endswith: '\certutil.exe'
+    CommandLine|contains:
+      - 'urlcache'
+      - 'verifyctl'
+  selection_bitsadmin:
+    Image|endswith: '\bitsadmin.exe'
+    CommandLine|contains: '/transfer'
+  selection_curl_wget:
+    Image|endswith:
+      - '\curl.exe'
+      - '\wget.exe'
+    CommandLine|contains:
+      - 'http://'
+      - 'https://'
+  selection_ps:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+    CommandLine|contains:
+      - 'DownloadFile'
+      - 'Invoke-WebRequest'
+      - 'iwr '
+      - 'Start-BitsTransfer'
+  condition: selection_certutil or selection_bitsadmin or selection_curl_wget or selection_ps
+falsepositives:
+  - curl / Invoke-WebRequest are used legitimately by admins and software. Tune by
+    ParentImage (e.g. exclude known updaters) and, where possible, destination allowlists.
+level: medium

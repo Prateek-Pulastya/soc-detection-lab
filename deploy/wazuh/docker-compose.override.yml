@@ -1,0 +1,14 @@
+# Optional override for a 16 GB host / 6 GB Ubuntu VM — caps the indexer heap so the stack
+# stays comfortable. Run the stack from wazuh-docker/single-node with:
+#   docker compose -f docker-compose.yml -f /path/to/this/docker-compose.override.yml up -d
+# Adjust service names if your wazuh-docker version differs (check `docker compose config`).
+services:
+  wazuh.indexer:
+    environment:
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+  wazuh.manager:
+    # keep manager modest; raise if you enable heavy modules
+    deploy:
+      resources:
+        limits:
+          memory: 2g

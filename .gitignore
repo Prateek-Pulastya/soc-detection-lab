@@ -1,0 +1,21 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.vscode/
+.idea/
+
+# Python (sigma-cli local runs, ai-soc)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Secrets — never commit
+.env
+
+# Do NOT ignore screenshots — they are evidence and belong in the repo.
+# Large raw captures (videos) can be ignored; commit the trimmed GIF only.
+*.mp4
+*.mov

@@ -1,0 +1,35 @@
+title: Persistence via Registry Run / RunOnce Key
+id: b2c3d4e5-2a3b-4c5d-8e01-0a1b2c3d4e5f   # regenerate your own UUID if you fork widely
+status: experimental
+description: >
+  Detects creation or modification of an autostart value under a Run / RunOnce key
+  (HKLM or HKCU CurrentVersion). A classic persistence primitive; keys on the write to
+  the autostart location, not on any single atomic's payload path.
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: DetectForge
+date: 2026/08/14
+tags:
+  - attack.persistence
+  - attack.t1547.001
+logsource:
+  product: windows
+  category: registry_set
+detection:
+  selection:
+    TargetObject|contains:
+      - '\Software\Microsoft\Windows\CurrentVersion\Run\'
+      - '\Software\Microsoft\Windows\CurrentVersion\RunOnce\'
+      - '\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Run\'
+      - '\Software\Microsoft\Windows\CurrentVersion\RunOnceEx\'
+  condition: selection
+falsepositives:
+  - Legitimate software installers and updaters write Run keys. Tune with an allowlist of
+    signed installer Images / trusted publishers (see filter_benign stub).
+level: medium
+# --- FP tuning stub: uncomment + populate after the benign pass ---
+# condition: selection and not filter_benign
+# filter_benign:
+#   Image|endswith:
+#     - '\OneDrive.exe'
+#     - '\your-trusted-installer.exe'

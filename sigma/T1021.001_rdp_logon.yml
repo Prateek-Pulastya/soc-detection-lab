@@ -1,0 +1,28 @@
+title: Successful RDP (RemoteInteractive) Logon
+id: 2a3b4c5d-9aab-4c5d-8e08-7a8b9c0dafc6   # regenerate your own UUID if you fork widely
+status: experimental
+description: >
+  Detects a successful RemoteInteractive (RDP) logon via Windows Security EventID 4624
+  with LogonType 10. On its own RDP is not malicious; value comes from correlating the
+  source IP / account against expected admin behaviour. Uses the Security channel (not
+  Sysmon), so ensure the agent forwards the Security log.
+references:
+  - https://attack.mitre.org/techniques/T1021/001/
+author: DetectForge
+date: 2026/08/14
+tags:
+  - attack.lateral_movement
+  - attack.t1021.001
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4624
+    LogonType: 10
+  condition: selection
+falsepositives:
+  - Legitimate remote administration over RDP. This is a hunting/context rule; pair it
+    with an allowlist of expected admin source hosts/accounts, or alert only on RDP from
+    unexpected subnets.
+level: low

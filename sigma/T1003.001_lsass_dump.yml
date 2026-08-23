@@ -1,0 +1,37 @@
+title: LSASS Memory Access for Credential Dumping
+id: d4e5f607-4a5b-4c5d-8e03-2a3b4c5d6e71   # regenerate your own UUID if you fork widely
+status: experimental
+description: >
+  Detects a process opening a handle to lsass.exe with memory-read access rights,
+  consistent with credential dumping (e.g. MiniDump via comsvcs.dll, procdump,
+  Mimikatz). Keys on the access to LSASS memory, not on the dumping tool's name.
+references:
+  - https://attack.mitre.org/techniques/T1003/001/
+author: DetectForge
+date: 2026/08/14
+tags:
+  - attack.credential_access
+  - attack.t1003.001
+logsource:
+  product: windows
+  category: process_access
+detection:
+  selection:
+    TargetImage|endswith: '\lsass.exe'
+    GrantedAccess:
+      - '0x1010'   # PROCESS_VM_READ | PROCESS_QUERY_INFORMATION
+      - '0x1410'
+      - '0x1438'
+      - '0x143a'
+      - '0x1418'
+      - '0x1fffff' # PROCESS_ALL_ACCESS
+  filter_known_av:
+    SourceImage|contains:
+      - '\Windows Defender\'
+      - '\MsMpEng.exe'
+      - '\wazuh-agent\'
+  condition: selection and not filter_known_av
+falsepositives:
+  - EDR/AV, backup agents, and some system tooling legitimately read LSASS. Allowlist
+    their signed SourceImages (extend filter_known_av) after the benign pass.
+level: high

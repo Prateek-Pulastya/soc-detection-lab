@@ -1,0 +1,45 @@
+title: Suspicious PowerShell Encoded Command or Download Cradle
+id: 8f4a2c10-1b2c-4d3e-9a01-ab12cd34ef56   # regenerate your own UUID if you fork widely
+status: experimental
+description: >
+  Detects PowerShell process creation using an encoded command or an in-memory
+  download-and-execute cradle (IEX + Net.WebClient/DownloadString), typical of stagers.
+  Keys on the technique (encoded/cradle behaviour), not on any single atomic's filename.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+author: DetectForge
+date: 2026/08/14
+tags:
+  - attack.execution
+  - attack.t1059.001
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_img:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  selection_susp:
+    CommandLine|contains:
+      - '-enc'
+      - '-EncodedCommand'
+      - 'FromBase64String'
+      - 'IEX'
+      - 'Invoke-Expression'
+      - 'Net.WebClient'
+      - 'DownloadString'
+      - 'DownloadFile'
+      - 'DownloadData'
+  condition: selection_img and selection_susp
+falsepositives:
+  - Admin/automation scripts that legitimately base64-encode args or pull from an internal URL.
+    Tune with an allowlist of signed script paths or known automation hosts (see filter_benign
+    block once you identify your environment's legitimate callers).
+level: high
+# --- FP tuning stub: uncomment + populate after Phase 1 benign pass ---
+# In the detection: block, add a filter and change condition to:
+#   condition: selection_img and selection_susp and not filter_benign
+# filter_benign:
+#   ParentImage|endswith: '\your-automation-agent.exe'
+#   CommandLine|contains: 'https://internal.corp.example/'
