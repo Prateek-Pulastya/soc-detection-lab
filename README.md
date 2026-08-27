@@ -10,10 +10,9 @@ The blue-team mirror of offensive work: I don't just run attacks — I catch the
 
 ## Coverage at a glance
 
-> **TODO (Phase 3):** replace with your ATT&CK Navigator screenshot.
-> `![DetectForge coverage](navigator/coverage.png)`
+![DetectForge — MITRE ATT&CK coverage, 7/10 techniques detected on live detonation](navigator/coverage.png)
 
-<!-- Navigator layer source: navigator/detectforge-coverage.json -->
+*ATT&CK Navigator coverage layer — green = detected on live detonation, yellow = rule authored with a documented gap. Layer source: [`navigator/detectforge-coverage.json`](navigator/detectforge-coverage.json).*
 
 ## Results
 
@@ -29,9 +28,15 @@ The blue-team mirror of offensive work: I don't just run attacks — I catch the
 | Rules proven portable (≥2 SIEM backends) | 3 |
 | Native Wazuh rules authored | 13 (10 techniques) |
 
-## One detonation, one alert
+**Full write-up: [SOC Detection Engineering Assessment](docs/SOC-Analysis-Report.md)** — methodology,
+per-technique results, documented gaps, FP analysis, AI-triage findings, and recommendations.
 
-> **TODO (Phase 4):** GIF of a detonation firing an alert. `![demo](docs/demo.gif)`
+## Detections firing in the SIEM
+
+![DetectForge custom rules firing in Wazuh Threat Hunting](navigator/coverage-overview.png)
+
+*Custom rules (100201–100291) firing on live Atomic Red Team detonations, each mapped to ATT&CK.
+Per-technique alert evidence lives in each `detections/<Txxxx>/screenshots/` folder.*
 
 ---
 
