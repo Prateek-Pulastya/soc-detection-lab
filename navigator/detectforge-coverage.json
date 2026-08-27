@@ -2,21 +2,21 @@
   "name": "DetectForge Coverage",
   "versions": { "attack": "15", "navigator": "5.0.0", "layer": "4.5" },
   "domain": "enterprise-attack",
-  "description": "DetectForge — detected ATT&CK techniques (green = rule fired on live detonation). Update score to 100 as each technique passes its loop.",
+  "description": "DetectForge — 7/10 ATT&CK techniques detected on live detonation (green). 3 authored-but-not-exercised gaps (yellow) with documented reasons.",
   "sorting": 0,
   "hideDisabled": false,
   "techniques": [
-    { "techniqueID": "T1059.001", "score": 0, "comment": "Execution — PowerShell cradle; Wazuh rule 100201. Set score 100 when detected+tuned." },
-    { "techniqueID": "T1547.001", "score": 0, "comment": "Persistence — Registry Run Key; Sysmon EID 13. Phase 2." },
-    { "techniqueID": "T1053.005", "score": 0, "comment": "Persistence — Scheduled Task; Sysmon EID 1 / 4698. Phase 2." },
-    { "techniqueID": "T1003.001", "score": 0, "comment": "Credential Access — LSASS dump (marquee); Sysmon EID 10. Phase 2." },
-    { "techniqueID": "T1055",     "score": 0, "comment": "Defense Evasion — Process Injection; Sysmon EID 8 / 10. Phase 2." },
-    { "techniqueID": "T1070.001", "score": 0, "comment": "Defense Evasion — Clear Event Logs; Sysmon EID 1 / 1102. Phase 2." },
-    { "techniqueID": "T1136.001", "score": 0, "comment": "Persistence — Create Local Account; 4720 / Sysmon EID 1. Phase 2." },
-    { "techniqueID": "T1105",     "score": 0, "comment": "Command & Control — Ingress Tool Transfer; Sysmon EID 3 / 11. Phase 2." },
-    { "techniqueID": "T1021.001", "score": 0, "comment": "Lateral Movement — Remote Desktop; 4624 type 10. Phase 2." },
-    { "techniqueID": "T1048",     "score": 0, "comment": "Exfiltration — Exfil over alt protocol; Sysmon EID 3. Phase 2." },
-    { "techniqueID": "T1567",     "score": 0, "comment": "Exfiltration — Exfil over web service; Sysmon EID 3. Phase 2." }
+    { "techniqueID": "T1059.001", "score": 100, "comment": "DETECTED — PowerShell cradle; Wazuh rule 100201 (lvl 12)." },
+    { "techniqueID": "T1547.001", "score": 100, "comment": "DETECTED — Registry Run Key; rule 100211 chained on built-in 92302 (EID 13)." },
+    { "techniqueID": "T1053.005", "score": 100, "comment": "DETECTED — Scheduled Task; rule 100221 (EID 1)." },
+    { "techniqueID": "T1003.001", "score": 50, "comment": "GAP — LSASS dump blocked by Windows LSASS protection/ASR; no EID 10. Rule 100231 authored." },
+    { "techniqueID": "T1055",     "score": 50, "comment": "GAP — CreateRemoteThread injection blocked (VirtualAllocEx denied); no EID 8. Rule 100241 authored." },
+    { "techniqueID": "T1070.001", "score": 100, "comment": "DETECTED — Clear Event Logs; rules 100251/100252 (EID 1 + 1102)." },
+    { "techniqueID": "T1136.001", "score": 100, "comment": "DETECTED — Create Local Account; rules 100261/100262 (EID 1 + 4720)." },
+    { "techniqueID": "T1105",     "score": 100, "comment": "DETECTED — Ingress Tool Transfer; rule 100271 (LOLBin download)." },
+    { "techniqueID": "T1021.001", "score": 50, "comment": "GAP — RDP listener would not bind (0x204); no 4624 type 10. Rule 100281 authored." },
+    { "techniqueID": "T1048",     "score": 100, "comment": "DETECTED — Exfil over alt protocol; rule 100291 (EID 3, external dest)." },
+    { "techniqueID": "T1567",     "score": 100, "comment": "DETECTED — Exfil over web service; rule 100291 (EID 3)." }
   ],
   "gradient": {
     "colors": ["#ff6666", "#ffe766", "#2e7d32"],
@@ -24,9 +24,9 @@
     "maxValue": 100
   },
   "legendItems": [
-    { "label": "Detected + tuned", "color": "#2e7d32" },
-    { "label": "In progress", "color": "#ffe766" },
-    { "label": "Not yet detected", "color": "#ff6666" }
+    { "label": "Detected on live detonation", "color": "#2e7d32" },
+    { "label": "Rule authored, gap documented", "color": "#ffe766" },
+    { "label": "Not covered", "color": "#ff6666" }
   ],
   "showTacticRowBackground": true,
   "tacticRowBackground": "#dddddd",

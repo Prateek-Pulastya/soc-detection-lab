@@ -27,12 +27,12 @@
   </rule>
   -->
 
-  <!-- T1547.001 — Registry Run/RunOnce key write. Sysmon EID 13. -->
+  <!-- T1547.001 — Registry Run/RunOnce key write. Chains on Wazuh built-in 92302
+       (sysmon EID13 Run-key detection) so our tagged rule fires instead of being
+       suppressed by the built-in. Lesson: extend the shipped ruleset, don't duplicate it. -->
   <rule id="100211" level="10">
-    <if_group>sysmon</if_group>
-    <field name="win.system.eventID">^13$</field>
-    <field name="win.eventdata.targetObject" type="pcre2">(?i)\\Software\\(Wow6432Node\\)?Microsoft\\Windows\\CurrentVersion\\Run(Once|OnceEx)?\\</field>
-    <description>Registry Run key persistence (ATT&amp;CK T1547.001)</description>
+    <if_sid>92302</if_sid>
+    <description>Registry Run key persistence (ATT&amp;CK T1547.001) [DetectForge]</description>
     <mitre><id>T1547.001</id></mitre>
   </rule>
 
