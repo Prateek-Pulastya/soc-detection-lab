@@ -69,8 +69,21 @@ not hidden.
 
 ## What I'd improve next
 
-- _(fill in as you build — e.g. add Linux (auditd) coverage, a second SIEM validation,
-  automate the detonate→validate loop in CI against a live agent.)_
+- **Close the 3 gaps on a permissive image.** T1003.001 (LSASS) and T1055 (injection) were
+  blocked by Windows LSASS protection / ASR and target-process protection; re-run them on a VM
+  with RunAsPPL and ASR relaxed (or an EDR-off gold image) to exercise the EID 10 / EID 8 rules.
+  T1021.001 needs a host whose RDP listener actually binds.
+- **Add a Linux endpoint** (Ubuntu + auditd or Sysmon-for-Linux) so coverage spans OSes, not just
+  Windows — most SOC roles want both.
+- **Automate the detonate→validate loop in CI.** Spin an ephemeral agent, fire the atomic, assert
+  the rule fires (turn the manual §5 loop into a regression test), alongside the existing
+  `sigma check` gate.
+- **Prove a second live SIEM.** The Sigma rules already convert to Elastic/Splunk; stand one up
+  and confirm the same detections fire there, not just in Wazuh.
+- **Real-time AI triage.** Promote the batch `ai-soc/` analyzer to a Wazuh Integrator that triages
+  every alert ≥ level 10 as it lands, instead of a batch pull.
+- **Deeper FP tuning.** Run a longer benign-activity baseline and add allowlists per rule
+  (especially the dual-use encoded-PowerShell and LSASS-read cases).
 
 ---
 
