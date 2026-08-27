@@ -28,8 +28,8 @@ The blue-team mirror of offensive work: I don't just run attacks — I catch the
 | Rules proven portable (≥2 SIEM backends) | 3 |
 | Native Wazuh rules authored | 13 (10 techniques) |
 
-**Full write-up: [SOC Detection Engineering Assessment](docs/SOC-Analysis-Report.md)** — methodology,
-per-technique results, documented gaps, FP analysis, AI-triage findings, and recommendations.
+**Full write-up — SOC Detection Engineering Assessment: [PDF](docs/DetectForge-SOC-Report.pdf) · [Markdown](docs/SOC-Analysis-Report.md)** —
+methodology, per-technique results, documented gaps, FP analysis, AI-triage findings, and recommendations.
 
 ## Detections firing in the SIEM
 
@@ -45,6 +45,18 @@ Per-technique alert evidence lives in each `detections/<Txxxx>/screenshots/` fol
 Wazuh single-node (Docker) on an Ubuntu VM + a Sysmon-instrumented Windows victim VM on an
 isolated host-only network. Atomic Red Team runs *on* the victim. Full diagram + the
 **Sigma↔Wazuh bridge** rationale in [ARCHITECTURE.md](ARCHITECTURE.md).
+
+```mermaid
+flowchart LR
+  ART["Atomic Red Team"] --> SYS["Sysmon + tuned config"]
+  SYS --> AG["Wazuh agent"]
+  AG -->|"events over isolated host-only network"| MGR["Wazuh manager (rules)"]
+  MGR --> IDX["OpenSearch indexer"]
+  IDX --> DSH["Dashboard / Threat Hunting"]
+```
+
+**The loop, per technique:** detonate → observe Sysmon EIDs → author Sigma (behaviour, not IOC) →
+deploy to Wazuh → validate on live detonation → tune false positives → map to ATT&CK.
 
 **Detection source of truth = Sigma** (`sigma/`, versioned in git). Wazuh isn't Sigma-native, so
 each rule is authored once in Sigma, then (a) converted to an OpenSearch query with `sigma-cli`

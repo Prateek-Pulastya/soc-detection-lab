@@ -36,6 +36,17 @@ engineer who can explain a miss is more valuable than a lab that claims perfect 
 on an isolated host-only network. Cloud, network, and Linux telemetry are explicitly out of scope
 (noted as future work).
 
+**Figure 1 — Lab architecture.**
+
+```mermaid
+flowchart LR
+  ART["Atomic Red Team"] --> SYS["Sysmon + tuned config"]
+  SYS --> AG["Wazuh agent"]
+  AG -->|"events over isolated host-only network"| MGR["Wazuh manager (rules)"]
+  MGR --> IDX["OpenSearch indexer"]
+  IDX --> DSH["Dashboard / Threat Hunting"]
+```
+
 **Per-technique loop.**
 1. **Detonate** — `Invoke-AtomicTest <Txxxx>` on the victim (snapshot taken first; NAT
    disconnected for isolation except where a download/exfil test required egress).
@@ -47,6 +58,18 @@ on an isolated host-only network. Cloud, network, and Linux telemetry are explic
 6. **Tune** — run benign activity; document the false-positive profile.
 7. **Map** — tag the ATT&CK technique/tactic; add to the Navigator coverage layer.
 
+**Figure 2 — The detection-engineering loop (run for every technique).**
+
+```mermaid
+flowchart LR
+  A["1. Detonate"] --> B["2. Observe Sysmon EIDs"]
+  B --> C["3. Author Sigma rule"]
+  C --> D["4. Deploy to Wazuh"]
+  D --> E["5. Validate on live detonation"]
+  E --> F["6. Tune false positives"]
+  F --> G["7. Map to ATT&CK"]
+```
+
 **Detection-as-code.** Sigma is the source of truth (versioned in git). Because Wazuh has no
 first-class Sigma backend, each rule is (a) converted to OpenSearch/Elastic/Splunk with
 `sigma-cli` for portability and (b) hand-translated to native Wazuh XML for real-time alerting.
@@ -57,6 +80,8 @@ A GitHub Actions `sigma check` job gates rule syntax.
 ## 3. Coverage results
 
 **Detected 7 / 10 on live detonation.**
+
+![ATT&CK Navigator coverage — 7/10 detected (green), 3 documented gaps (yellow)](../navigator/coverage.png)
 
 | ATT&CK | Technique | Tactic | Telemetry | Wazuh rule | Result |
 |--------|-----------|--------|-----------|-----------|--------|
@@ -75,6 +100,8 @@ A GitHub Actions `sigma check` job gates rule syntax.
 
 ## 4. Detection notes (selected)
 
+![DetectForge custom rules (100201–100291) firing on live detonations in Wazuh Threat Hunting](../navigator/coverage-overview.png)
+
 **T1059.001 — PowerShell encoded command / download cradle (marquee of the detected set).**
 Rule 100201 keys on `powershell.exe`/`pwsh.exe` with an encoding or in-memory-download indicator
 in the command line. Validated against two different shapes (`-EncodedCommand` and a
@@ -86,6 +113,8 @@ independently-anchored custom rule was suppressed. The fix was to **chain the cu
 child** (`<if_sid>92302</if_sid>`) — the DetectForge-tagged detection now fires while extending the
 shipped ruleset rather than duplicating it. Knowing when to extend vs. author from scratch is core
 to the role.
+
+![T1547.001 Run Key alert firing as the DetectForge-tagged rule 100211](../detections/T1547.001/screenshots/alert.png)
 
 **T1070.001 — Clear Event Logs.** Detected on two vectors: the process command line
 (`wevtutil cl …`, Sysmon EID 1) and the high-fidelity Security channel signal (EventID 1102,
